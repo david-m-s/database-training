@@ -2,11 +2,14 @@ package com.magento.example;
 
 import com.magento.example.domain.User;
 import com.magento.example.repository.UserRepository;
+import com.magento.example.service.UserService;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,11 +21,17 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DatabaseTrainingApplicationTests {
 
+  private final static Logger logger =
+      LoggerFactory.getLogger(DatabaseTrainingApplicationTests.class);
+
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private UserService userService;
 
   @Test
   public void contextLoads() {
@@ -35,8 +44,23 @@ public class DatabaseTrainingApplicationTests {
 
   @Test
   public void B_addedOneRow() {
-    userRepository.save(new User(null, "user1", "John", "Smith"));
+    userRepository.save(new User(null, "userJ", "John", "Smith"));
     Assert.assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
   }
+
+  @Test
+  public void transactions() {
+    logger.info("Before transactions test there are {} users in db",
+        JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
+    try {
+      userService.addAll(new User(null, "user1", "a", "b"), new User(null, "user2", null, null));
+    } catch (RuntimeException re) {
+      logger.info("Expected exception because nulls are not allowed in first name.", re);
+    }
+    logger.info("After transactions test there are {} users in db",
+        JdbcTestUtils.countRowsInTable(jdbcTemplate, "users"));
+
+  }
+
 
 }

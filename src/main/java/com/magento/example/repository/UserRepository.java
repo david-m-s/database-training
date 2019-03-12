@@ -25,7 +25,7 @@ public class UserRepository {
 
   // TODO
   public long count() {
-    return 0;
+    return jdbcTemplate.queryForObject("select count(*) from users", Long.class);
   }
 
   // TODO
