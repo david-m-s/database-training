@@ -2,7 +2,6 @@ package com.magento.example.repository;
 
 import com.magento.example.domain.NamesOnly;
 import com.magento.example.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,8 +15,12 @@ import java.util.List;
 
 @Repository
 public class UserRepository {
-  @Autowired
+
   private JdbcTemplate jdbcTemplate;
+
+  public UserRepository(JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+  }
 
   public List<User> findAll() {
     return jdbcTemplate.query("select * from users", new UserRowMapper());

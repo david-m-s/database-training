@@ -5,7 +5,6 @@ import com.magento.example.domain.User;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,8 +13,11 @@ import javax.persistence.criteria.Root;
 @Repository
 public class JPAUserRepository {
 
-  @PersistenceContext
   private EntityManager em;
+
+  public JPAUserRepository(EntityManager em) {
+    this.em = em;
+  }
 
   public List<User> findAll() {
     CriteriaBuilder cb = em.getCriteriaBuilder();
